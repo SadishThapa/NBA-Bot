@@ -36,5 +36,9 @@ A simple Discord bot that fetches NBA player data and fantasy points. Built usin
 ## Current Commands (v1):
 - /player
 
+## Example of command used:
+- ![NBA Fantasy Bot](./images/player command example.png)
+
+
 ## APIs used:
 - nba_api: [https://pypi.org/project/nba_api/](https://pypi.org/project/nba_api/)
