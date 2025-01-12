@@ -1,12 +1,14 @@
 const { Client, Events, SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const { token } = require("./config.json");
+const { token } = require("./gitignore/config.json");
 const client = new Client({ intents: [] });
 const players = require('./filterId/player_id.json');
 const { spawn } = require("child_process");
 
 client.once(Events.ClientReady, (c) => {
+  // verifies login was successful
   console.log(`Logged in as ${c.user.username}`);
 
+  // ./player command used to search for players
   const player = new SlashCommandBuilder()
     .setName("player")
     .setDescription("Gets Statistics and Fantasy Points of the Player you Specify")
@@ -20,16 +22,18 @@ client.once(Events.ClientReady, (c) => {
 });
 
 client.on(Events.InteractionCreate, async interaction => {
+  // if player command initiated
   if (interaction.commandName === "player") {
     const playerName = interaction.options.getString("player");
 
+    // ignores accent ascii symbols
     const playerSpecified = players.find(p =>
       p.full_name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() ===
       playerName.toLowerCase()
   );
   
     if (playerSpecified) {
-      // Spawn the Python process to fetch the player's stats
+      // Spawns the Python process to fetch the player's stats
       const pythonProcess = spawn('python3', ['./stats.py', playerSpecified.id]);
 
       // Initialize variables to hold stats
@@ -79,6 +83,5 @@ client.on(Events.InteractionCreate, async interaction => {
     }
   }
 });
-
 
 client.login(token);
