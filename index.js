@@ -1,66 +1,84 @@
-const { Client, Events, SlashCommandBuilder } = require("discord.js");
-const { token, rapidApiKey } = require("./config.json");
+const { Client, Events, SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { token } = require("./config.json");
 const client = new Client({ intents: [] });
-const fs = require("fs");
-const players = require('/root/NBA-Bot/player_id.json'); // (with path)
-const { spawn } = require("child_process"); // Import the spawn function to run the Python script
+const players = require('./filterId/player_id.json');
+const { spawn } = require("child_process");
 
 client.once(Events.ClientReady, (c) => {
   console.log(`Logged in as ${c.user.username}`);
-  
-  // Build the player command
+
   const player = new SlashCommandBuilder()
     .setName("player")
-    .setDescription("Gets fantasy points of the player you specify")
+    .setDescription("Gets Statistics and Fantasy Points of the Player you Specify")
     .addStringOption(option =>
       option.setName("player")
-        .setDescription("The full name of the Player")
-        .setRequired(true) // You can make this optional if needed
+        .setDescription("Enter the full name of the Player")
+        .setRequired(true)
     );
 
-  // Register the 'player' command with the Discord API
-  client.application.commands.create(player.toJSON()); // Convert SlashCommandBuilder to JSON
+  client.application.commands.create(player.toJSON());
 });
 
-client.on(Events.InteractionCreate, (interaction) => {
+client.on(Events.InteractionCreate, async interaction => {
   if (interaction.commandName === "player") {
     const playerName = interaction.options.getString("player");
-    console.log(playerName);
-    
-    // Defer the reply to allow for processing time
-    interaction.deferReply();
 
-    const playerSpecified = players.find(p => p.full_name.toLowerCase() === playerName.toLowerCase());
+    const playerSpecified = players.find(p =>
+      p.full_name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() ===
+      playerName.toLowerCase()
+  );
+  
     if (playerSpecified) {
-      const player_id = playerSpecified.id;
-      
       // Spawn the Python process to fetch the player's stats
-      const pythonProcess = spawn('python3', ['/root/NBA-Bot/stats.py', player_id]);
+      const pythonProcess = spawn('python3', ['./stats.py', playerSpecified.id]);
 
-      // Handle the Python process output
+      // Initialize variables to hold stats
+      let ppg, apg, rpg, fantasyPoints;
+
       pythonProcess.stdout.on('data', (data) => {
-        const result = data.toString();  // Assuming result is in the format you want
-        console.log(result);
-
-        // Reply with the result after the Python process finishes
-        interaction.editReply(`${playerName} Fantasy Points This Season Is: ${result}`);
-      });
-
-      // Handle errors from Python process
-      pythonProcess.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-        interaction.editReply("An error occurred while fetching the player's stats.");
-      });
-
-      pythonProcess.on('close', (code) => {
-        if (code !== 0) {
-          interaction.editReply("An error occurred during the Python script execution.");
+        try {
+          const result = JSON.parse(data.toString());
+          console.log(result);
+          ppg = result.ppg;
+          apg = result.apg;
+          rpg = result.rpg;
+          fantasyPoints = result.fantasyPoints;
+        } catch (error) {
+          console.error("Error parsing Python data:", error);
         }
       });
+
+      pythonProcess.on('close', () => {
+        // Create the embed with player stats
+        const embed = new EmbedBuilder()
+          .setTitle(`${playerName} Fantasy Points This Season`)
+          .setDescription(`🏀 Stats for the 2024-2025 season 🏀`)
+          .setColor('#7289DA')
+          .setThumbnail('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExanZ1amdnYTB4NGR4ZWY0eWVpZHJhNm1kb2Y5a2JzdWQ0emR3cXd6NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/xT9IgCfqoMQEWOUef6/giphy.gif')
+          .addFields(
+            { name: 'Points Per Game', value: `${ppg}` },
+            { name: 'Assists Per Game', value: `${apg}` },
+            { name: 'Rebounds Per Game', value: `${rpg}` },
+            { name: 'Average Fantasy Points', value: `${fantasyPoints}` }
+          )
+          .setImage(`https://cdn.nba.com/headshots/nba/latest/1040x760/${playerSpecified.id}.png`)
+          .setTimestamp()
+          .setFooter({ text: 'NBA Fantasy Bot', iconURL: 'https://i.pinimg.com/736x/8f/42/96/8f42962302981ec6fac5b718a33e768c.jpg' });
+
+        // Only reply after the Python process finishes
+        interaction.reply({ embeds: [embed] });
+      });
+
+      pythonProcess.on('error', (err) => {
+        console.error('Python process error:', err);
+        interaction.reply({ content: "There was an error fetching the player's stats." });
+      });
     } else {
-      interaction.editReply("Player not found.");
+      // Handle case where player is not found
+      interaction.reply(`Player ${playerName} not found/not currently active!`);
     }
   }
 });
+
 
 client.login(token);
