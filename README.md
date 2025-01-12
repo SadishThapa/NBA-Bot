@@ -1,9 +1,37 @@
-# NBA-Bot
-This bot enables users to use the /player command to gather information regarding stats and average fantasy points of active NBA players in the 2024-2025 NBA Season.
+# NBA Fantasy Bot
 
-# Discord Bot
+A simple Discord bot that fetches NBA player data and fantasy points. Built using `discord.js`.
 
+## Features
 
-# Credit
+- Responds to a basic slash command `/player` (currently in v1).
+- Fetches NBA player information and displays fantasy-related data.
+- Displays points, rebounds, assists, and average fantasy in an embedded format
 
-inspiration and credit to nba_api: [text](https://pypi.org/project/nba_api/)
+## Setup
+
+1. Clone the repo:
+```bash
+   git clone https://github.com/yourusername/nba-fantasy-bot.git
+   cd nba-fantasy-bot
+```
+
+2. Install dependencies
+```bash
+  npm install 
+```
+
+2. Acquire Discord Token and use OAuth02 to invite to server, put token inside confi.json file
+```bash
+{
+  "token": "YOUR_BOT_TOKEN",
+}
+```
+
+2. Run Bot In Server
+```bash
+  node index.js 
+```
+
+1. Current Commands:
+/player
