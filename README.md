@@ -13,7 +13,7 @@ A simple Discord bot that fetches NBA player data and fantasy points. Built usin
 1. Clone the repo:
 ```bash
    git clone https://github.com/yourusername/NBA-Bot.git
-   cd nba-fantasy-bot
+   cd NBA-Bot
 ```
 
 2. Install dependencies
