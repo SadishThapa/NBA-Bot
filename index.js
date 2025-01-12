@@ -1,5 +1,5 @@
 const { Client, Events, SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const { token } = require("./gitignore/config.json");
+const { token } = require("YOUR_PATH_TO_CONFIG.JSON");
 const client = new Client({ intents: [] });
 const players = require('./filterId/player_id.json');
 const { spawn } = require("child_process");
