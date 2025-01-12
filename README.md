@@ -21,17 +21,20 @@ A simple Discord bot that fetches NBA player data and fantasy points. Built usin
   npm install 
 ```
 
-2. Acquire Discord Token and use OAuth02 to invite to server, put token inside config.json file
+3. Acquire Discord Token and use OAuth02 to invite to server, put token inside config.json file
 ```bash
 {
   "token": "YOUR_BOT_TOKEN",
 }
 ```
 
-2. Run Bot In Server
+4. Run Bot In Server
 ```bash
   node index.js 
 ```
 
-1. Current Commands:
-/player
+## Current Commands (v1):
+- /player
+
+## APIs used:
+- nba_api: [https://pypi.org/project/nba_api/](https://pypi.org/project/nba_api/)
