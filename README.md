@@ -34,9 +34,9 @@ A simple Discord bot that fetches NBA player data and fantasy points. Built usin
 ```
 
 ## Current Commands (v1):
-- /player
+- /player [Player Name]
 
-## Example of command used:
+## Example of command used: /player Cade Cunningham
 ![NBA Fantasy Bot](images/example.png)
 
 
