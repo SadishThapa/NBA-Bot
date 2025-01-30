@@ -1,8 +1,8 @@
-const { Client, Events, SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const { token } = require("YOUR_PATH_TO_CONFIG.JSON");
+const { Client, Events, SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { token } = require('YOUR_PATH_TO_CONFIG_FILE');
 const client = new Client({ intents: [] });
 const players = require('./filterId/player_id.json');
-const { spawn } = require("child_process");
+const { spawn } = require('child_process');
 
 client.once(Events.ClientReady, (c) => {
   // verifies login was successful
@@ -18,7 +18,21 @@ client.once(Events.ClientReady, (c) => {
         .setRequired(true)
     );
 
+  const standings = new SlashCommandBuilder()
+  .setName("standings")
+  .setDescription("Gets Current Standings of Each Conference")
+  .addStringOption(option =>
+    option.setName("conference")
+      .setDescription("Enter Eastern or Western")
+      .setRequired(true)
+  );
+
+  
+
   client.application.commands.create(player.toJSON());
+
+  client.application.commands.create(standings.toJSON());
+
 });
 
 client.on(Events.InteractionCreate, async interaction => {
@@ -80,6 +94,11 @@ client.on(Events.InteractionCreate, async interaction => {
     } else {
       // Handle case where player is not found
       interaction.reply(`Player ${playerName} not found/not currently active!`);
+    }
+
+
+    if (interaction.commandName === "standings") {
+    
     }
   }
 });

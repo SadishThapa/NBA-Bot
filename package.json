@@ -1,0 +1,15 @@
+{
+  "name": "nba-bot",
+  "version": "1.0.0",
+  "description": "A simple Discord bot that fetches NBA player data and fantasy points. Built using `discord.js`.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.17.3"
+  }
+}
